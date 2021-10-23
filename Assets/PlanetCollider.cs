@@ -7,8 +7,7 @@ public class PlanetCollider : MonoBehaviour
     public string type;
     public bool anchorable = false;
     public float gravityStrength = 0;
-    public float anchorTime = 1;
-    public float knockbackStrength = 0;
+    [SerializeField] private float knockbackStrength;
 
     private PlayerController visitingPlayer;
 
@@ -21,9 +20,9 @@ public class PlanetCollider : MonoBehaviour
                 visitingPlayer = other.GetComponent<PlayerController>();
                 visitingPlayer.AddGravitySource(this);
 
-                if(anchorable)
+                if (anchorable)
                 {
-                    StartCoroutine(CheckAnchorStatus());
+                    visitingPlayer.AttemptAnchor(GetInstanceID());
                 }
             }
         }
@@ -33,20 +32,8 @@ public class PlanetCollider : MonoBehaviour
             if (other.name == "PLAYER")
             {
                 PlayerController player = other.GetComponent<PlayerController>();
-                player.PushShip((player.transform.position - transform.position).normalized * knockbackStrength);
+                player.OnPlanetCollision(player.transform.position - transform.position, knockbackStrength);
             }
-        }
-    }
-
-    private IEnumerator CheckAnchorStatus()
-    {
-        yield return new WaitForSeconds(anchorTime);
-
-        if(visitingPlayer)
-        {
-            Debug.Log("Anchored!");
-            visitingPlayer.ResetForces();
-            visitingPlayer.anchoredPlanet = GetInstanceID();
         }
     }
 
@@ -58,12 +45,6 @@ public class PlanetCollider : MonoBehaviour
             {
                 visitingPlayer = other.GetComponent<PlayerController>();
                 visitingPlayer.RemoveGravitySource(this);
-
-                if(visitingPlayer.anchoredPlanet == GetInstanceID())
-                {
-                    visitingPlayer.anchoredPlanet = -1;
-                }
-
                 visitingPlayer = null;
             }
         }

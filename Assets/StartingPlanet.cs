@@ -12,10 +12,8 @@ public class StartingPlanet : MonoBehaviour
         {
             if (other.name == "PLAYER")
             {
-                Debug.Log("Enter");
                 PlayerController player = other.GetComponent<PlayerController>();
-                player.awayFromCenter = false;
-                player.ResetForces();
+                player.ApproachStartingPoint();
             }
         }
 
@@ -24,8 +22,7 @@ public class StartingPlanet : MonoBehaviour
             if (other.name == "PLAYER")
             {
                 PlayerController player = other.GetComponent<PlayerController>();
-                player.transform.position = Vector3.zero;
-                player.ResetForces();
+                player.DockShip();
             }
         }
     }
@@ -37,7 +34,7 @@ public class StartingPlanet : MonoBehaviour
             if (other.name == "PLAYER")
             {
                 PlayerController player = other.GetComponent<PlayerController>();
-                player.awayFromCenter = true;
+                player.LeaveStartingPoint();
             }
         }
     }
