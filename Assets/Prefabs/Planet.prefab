@@ -48,7 +48,6 @@ MonoBehaviour:
   type: gravityField
   anchorable: 1
   gravityStrength: 10
-  anchorTime: 1
   knockbackStrength: 0
 --- !u!212 &4295980176872401355
 SpriteRenderer:
@@ -91,7 +90,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 1, g: 0.64777285, b: 0.0990566, a: 1}
+  m_Color: {r: 0.5660378, g: 0.36814618, b: 0.1308295, a: 0.3764706}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -167,7 +166,6 @@ MonoBehaviour:
   type: planet
   anchorable: 1
   gravityStrength: 0
-  anchorTime: 0
   knockbackStrength: 80
 --- !u!212 &4295980177900472386
 SpriteRenderer:
