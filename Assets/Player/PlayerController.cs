@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    [HideInInspector] public Vector3 mouseDirection;
     [SerializeField] private GameObject playerSprite;
     [Header("Swag")]
     [SerializeField] private float forceScale;
@@ -70,13 +71,13 @@ public class PlayerController : MonoBehaviour
     {
         while (isDown)
         {
-            Vector3 directionVector = initialPosition - mousePosition;
-            pullPower = (Mathf.Clamp(directionVector.magnitude, 50f, 400f) - 50f) / 350f;
+            mouseDirection = initialPosition - mousePosition;
+            pullPower = (Mathf.Clamp(mouseDirection.magnitude, 50f, 400f) - 50f) / 350f;
 
             if (pullPower > 0)
             {
-                float factor = directionVector.x < 0f ? 1f : -1f;
-                Quaternion rotation = Quaternion.Euler(0, 0, factor * Vector3.Angle(directionVector.normalized, Vector3.up));
+                float factor = mouseDirection.x < 0f ? 1f : -1f;
+                Quaternion rotation = Quaternion.Euler(0, 0, factor * Vector3.Angle(mouseDirection.normalized, Vector3.up));
                 playerSprite.transform.rotation = rotation;
             }
 
