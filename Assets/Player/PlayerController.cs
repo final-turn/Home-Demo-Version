@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Image anchorProgressImage;
     [Header("Swag")]
     [SerializeField] private float forceScale;
-    [SerializeField] private float gravityScale;
+    [SerializeField] private float centerDistanceFactor;
     [SerializeField] private float anchorSpeed;
     [SerializeField] private float anchorTime;
     [Header("Sound Effects")]
@@ -117,7 +117,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     private void FixedUpdate()
     {
         if (transform.position != Vector3.zero)
@@ -143,23 +142,12 @@ public class PlayerController : MonoBehaviour
     private void FreeMovement()
     {
         Vector3 direction = Vector3.zero - transform.position;
-        if (direction.magnitude > 1)
+
+        m_Rigidbody.AddForce(direction * (centerDistanceFactor/ direction.magnitude), ForceMode2D.Force);
+
+        foreach (PlanetCollider collider in gravitySourceMap.Values)
         {
-            m_Rigidbody.AddForce(direction.normalized * gravityScale, ForceMode2D.Force);
-
-            Vector2 displacement = Vector3.zero;
-
-            foreach (PlanetCollider collider in gravitySourceMap.Values)
-            {
-                m_Rigidbody.AddForce((collider.transform.position - transform.position).normalized * collider.gravityStrength);
-            }
-
-            transform.position = transform.position + new Vector3(displacement.x, displacement.y, 0);
-        }
-        else if (!awayFromCenter && m_Rigidbody.velocity.magnitude < 3)
-        {
-            transform.position = Vector3.zero;
-            m_Rigidbody.velocity = Vector3.zero;
+            m_Rigidbody.AddForce((collider.transform.position - transform.position).normalized * collider.gravityStrength);
         }
     }
 
@@ -171,6 +159,8 @@ public class PlayerController : MonoBehaviour
 
     public void ApproachStartingPoint()
     {
+        transform.position = Vector3.zero;
+        m_Rigidbody.velocity = Vector3.zero;
         awayFromCenter = false;
         ResetForces();
     }
@@ -238,6 +228,8 @@ public class PlayerController : MonoBehaviour
         anchorDuration = 0f;
         anchorProgressRoot.SetActive(true);
 
+        float startTime = Time.time;
+
         while (gravitySourceMap.ContainsKey(targetPlanet) && anchorDuration < anchorTime)
         {
             anchorDuration += 0.025f;
@@ -245,6 +237,8 @@ public class PlayerController : MonoBehaviour
 
             yield return new WaitForSeconds(0.025f);
         }
+
+        Debug.Log(Time.time - startTime);
 
         if (gravitySourceMap.ContainsKey(targetPlanet) && anchorDuration >= 1f)
         {

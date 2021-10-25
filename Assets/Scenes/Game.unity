@@ -5883,7 +5883,7 @@ MonoBehaviour:
   anchorProgressRoot: {fileID: 1427391010}
   anchorProgressImage: {fileID: 1992655564}
   forceScale: 30
-  gravityScale: 10
+  centerDistanceFactor: 30
   anchorSpeed: 60
   anchorTime: 1
   anchorSFX: {fileID: 8300000, guid: 3f6b2cdb6d29e7741b2d1b84aa4e1d3c, type: 3}
