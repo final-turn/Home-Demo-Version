@@ -6,14 +6,6 @@
             "id": "53080f75-f0e9-42bc-876f-dc899e471028",
             "actions": [
                 {
-                    "name": "Press",
-                    "type": "PassThrough",
-                    "id": "1a075ce5-7c0e-4c02-b701-0af0588825a1",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Position",
                     "type": "Value",
                     "id": "6bc7de3f-c45b-4baf-8bab-b241f1d0a931",
@@ -39,28 +31,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "776a60c5-3598-4a43-9123-e821dfb9f6fa",
-                    "path": "<Mouse>/press",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Press",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "15e47a9f-71d9-4f75-b970-adff9ef67946",
-                    "path": "<Touchscreen>/press",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Press",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "a8bedb5a-e8b9-458c-bd78-f42cc576f9e1",

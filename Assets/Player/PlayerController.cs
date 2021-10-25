@@ -3,25 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [HideInInspector] public Vector3 mouseDirection;
     [SerializeField] private GameObject playerSprite;
+    [SerializeField] private GameObject anchorProgressRoot;
+    [SerializeField] private Image anchorProgressImage;
     [Header("Swag")]
     [SerializeField] private float forceScale;
     [SerializeField] private float gravityScale;
     [SerializeField] private float anchorSpeed;
     [SerializeField] private float anchorTime;
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip anchorSFX;
+    [SerializeField] private AudioClip launchSFX;
+    [SerializeField] private AudioClip crashSFX;
 
     private Rigidbody2D m_Rigidbody;
     private Vector2 mousePosition;
     private float pullPower;
     private float fuel;
     private bool isDown;
+    private bool inGame = true;
     private float anchorFactor;
     private bool awayFromCenter;
-    private int anchoredPlanet = -1;
+    [HideInInspector] public int anchoredPlanet = -1;
     private float anchorDuration = 0;
 
     private Dictionary<int, PlanetCollider> gravitySourceMap;
@@ -34,16 +42,17 @@ public class PlayerController : MonoBehaviour
         fuel = 1.0f;
     }
 
-    public void OnPress(InputValue value)
+    public void PointerDown(Vector2 downPosition)
     {
-        if (value.isPressed)
+        isDown = true;
+        StartCoroutine(WhilePressDown(downPosition));
+    }
+
+    public void PointerUp()
+    {
+        isDown = false;
+        if (pullPower > 0)
         {
-            isDown = true;
-            StartCoroutine(WhilePressDown(Input.mousePosition));
-        }
-        else
-        {
-            isDown = false;
             ComputeMoveVector();
         }
     }
@@ -55,21 +64,28 @@ public class PlayerController : MonoBehaviour
 
     private void ComputeMoveVector()
     {
-        if(fuel > 0)
+        if (fuel > 0)
         {
-            ResetForces();
-            anchoredPlanet = -1;
             m_Rigidbody.AddForce(playerSprite.transform.up * fuel * pullPower * forceScale, ForceMode2D.Impulse);
             fuel *= 1 - pullPower;
             pullPower = 0;
+            AudioManager.Instance.PlaySFX(launchSFX, 0.5f);
         }
+
+        if (anchoredPlanet != -1)
+        {
+            anchorDuration = 0f;
+            StartCoroutine(AnchorCountdown(anchoredPlanet));
+            anchoredPlanet = -1;
+        }
+
         RenderableState.remainingFuel = fuel;
         RenderableState.consumePower = 0;
     }
 
     private IEnumerator WhilePressDown(Vector2 initialPosition)
     {
-        while (isDown)
+        while (isDown && inGame)
         {
             mouseDirection = initialPosition - mousePosition;
             pullPower = (Mathf.Clamp(mouseDirection.magnitude, 50f, 400f) - 50f) / 350f;
@@ -166,6 +182,7 @@ public class PlayerController : MonoBehaviour
 
     public void DockShip()
     {
+        AudioManager.Instance.PlaySFX(anchorSFX, 0.5f);
         transform.position = Vector3.zero;
         StartCoroutine(RefuelShip());
         ResetForces();
@@ -178,9 +195,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnPlanetCollision(Vector3 collisionVector, float knockbackStrength)
     {
+        AudioManager.Instance.PlaySFX(crashSFX, 0.5f);
         m_Rigidbody.AddForce(collisionVector.normalized * knockbackStrength, ForceMode2D.Impulse);
         anchorDuration = 0f;
-        if(anchoredPlanet != -1)
+        if (anchoredPlanet != -1)
         {
             StartCoroutine(AnchorCountdown(anchoredPlanet));
             anchoredPlanet = -1;
@@ -197,6 +215,10 @@ public class PlayerController : MonoBehaviour
         Vector2 direction = (planet.transform.position - transform.position).normalized;
         Vector2 perp = Vector2.Perpendicular(direction);
         anchorFactor = Vector3.Dot(perp, m_Rigidbody.velocity.normalized) > 0 ? 1f : -1f;
+
+        UIManager.Instance.SetActivePlanet(planet.name, planet.gameObject);
+
+        AudioManager.Instance.PlaySFX(anchorSFX, 0.5f);
         StartCoroutine(RefuelShip());
         ResetForces();
     }
@@ -214,10 +236,13 @@ public class PlayerController : MonoBehaviour
     private IEnumerator AnchorCountdown(int targetPlanet)
     {
         anchorDuration = 0f;
+        anchorProgressRoot.SetActive(true);
 
         while (gravitySourceMap.ContainsKey(targetPlanet) && anchorDuration < anchorTime)
         {
             anchorDuration += 0.025f;
+            anchorProgressImage.fillAmount = anchorDuration;
+
             yield return new WaitForSeconds(0.025f);
         }
 
@@ -225,11 +250,24 @@ public class PlayerController : MonoBehaviour
         {
             AnchorShip(targetPlanet);
         }
+        anchorProgressRoot.SetActive(false);
     }
 
-    private void OnRestart()
+    public void OnRestart()
     {
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
+    }
+
+    public void OnPause()
+    {
+        UIManager.Instance.pauseMenu.SetActive(!UIManager.Instance.pauseMenu.activeSelf);
+    }
+
+    public void EndGame(Vector3 home)
+    {
+        m_Rigidbody.bodyType = RigidbodyType2D.Static;
+        GetComponent<PlayerInput>().actions.Disable();
+        inGame = false;
     }
 }
