@@ -15,10 +15,12 @@ public class SaveManager : MonoBehaviour
     [DllImport("__Internal")]
     private static extern string GetLocalData();
 
+    public static bool continueGame;
+    public static Vector3 startPosition;
+
     private void Start()
     {
         Instance = this;
-        Load();
     }
 
     private void OnDestroy()
@@ -28,10 +30,14 @@ public class SaveManager : MonoBehaviour
 
     public void Save()
     {
+        if(player.anchoredPlanetID == -1)
+        {
+            return;
+        }
+        AudioManager.Instance.ClickSoundEffect();
 #if UNITY_WEBGL && !UNITY_EDITOR
-        Vector3 saveData = player.transform.position;
-        saveData.z = player.anchoredPlanet;
-        SetLocalData(player.transform.position.ToString());
+        string saveDataString = player.transform.position.ToString();
+        SetLocalData(saveDataString);
 #endif
     }
 
@@ -41,9 +47,7 @@ public class SaveManager : MonoBehaviour
         string saveData = GetLocalData();
         if (!string.IsNullOrEmpty(saveData))
         {
-            Vector3 data = StringToVector3(saveData);
-            player.transform.position = new Vector3(data.x, data.y, 0);
-            // player.AnchorShip(Mathf.FloorToInt(data.z));
+            startPosition = StringToVector3(saveData);
         }
 #endif
     }

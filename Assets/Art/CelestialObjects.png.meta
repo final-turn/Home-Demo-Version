@@ -35,6 +35,9 @@ TextureImporter:
   - first:
       213: 8516180259996658169
     second: Large_Meteor
+  - first:
+      213: 1158281529177622174
+    second: Bouncy Boi
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -438,7 +441,7 @@ TextureImporter:
         width: 32
         height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -446,6 +449,27 @@ TextureImporter:
       bones: []
       spriteID: 9f96b4863dc8f2670800000000000000
       internalID: 8516180259996658169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bouncy Boi
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e964788f9ea031010800000000000000
+      internalID: 1158281529177622174
       vertices: []
       indices: 
       edges: []

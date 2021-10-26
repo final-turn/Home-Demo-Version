@@ -4,38 +4,37 @@ using UnityEngine;
 
 public class StartingPlanet : MonoBehaviour
 {
-    public string type;
+    [SerializeField] private string type;
+
+    private bool isDocked = false;
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(type=="gravityField")
+        if (other.name == "PLAYER")
         {
-            if (other.name == "PLAYER")
+            PlayerController player = other.GetComponent<PlayerController>();
+
+            if (type == "gravityField")
             {
-                PlayerController player = other.GetComponent<PlayerController>();
                 player.ApproachStartingPoint();
             }
-        }
 
-        if (type == "platform")
-        {
-            if (other.name == "PLAYER")
+            if (type == "platform")
             {
-                PlayerController player = other.GetComponent<PlayerController>();
-                player.DockShip();
+                if (!isDocked)
+                {
+                    player.DockShip();
+                    isDocked = true;
+                }
             }
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (type == "gravityField")
+        if (type == "platform" && other.name == "PLAYER")
         {
-            if (other.name == "PLAYER")
-            {
-                PlayerController player = other.GetComponent<PlayerController>();
-                player.LeaveStartingPoint();
-            }
+            isDocked = false;
         }
     }
 }

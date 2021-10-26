@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
 
     [Header("Menus")]
     [SerializeField] private GameObject infoWindow;
+    [SerializeField] private PlayerController player;
+    [SerializeField] private Button save;
     public GameObject pauseMenu;
     [Header("Fuel Gauge Properties")]
     [SerializeField] private Image consumeGauge;
@@ -68,6 +70,7 @@ public class UIManager : MonoBehaviour
     public void TogglePause()
     {
         AudioManager.Instance.ClickSoundEffect();
+        save.interactable = (player.anchoredPlanetID != -1);
         pauseMenu.SetActive(!pauseMenu.activeSelf);
     }
 

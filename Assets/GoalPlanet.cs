@@ -18,15 +18,18 @@ public class GoalPlanet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        player = other.GetComponent<PlayerController>();
+        if (other.name == "PLAYER")
+        {
+            player = other.GetComponent<PlayerController>();
 
-        player.EndGame(transform.position);
+            player.EndGame(transform.position);
 
-        AudioManager.Instance.PlayBackgroundSong("end");
-        gravityfield.SetActive(false);
-        userInterface.SetActive(false);
-        inEnding = true;
-        initialPosition = player.transform.position;
+            AudioManager.Instance.PlayBackgroundSong("end");
+            gravityfield.SetActive(false);
+            userInterface.SetActive(false);
+            inEnding = true;
+            initialPosition = player.transform.position;
+        }
     }
 
     private void Update()
@@ -35,9 +38,9 @@ public class GoalPlanet : MonoBehaviour
         {
             timeElapsed += Time.deltaTime;
 
-            if (timeElapsed < 63.7f)
+            if (timeElapsed < 42f)
             {
-                player.transform.position = Vector3.Lerp(initialPosition, transform.position, timeElapsed / 89f);
+                player.transform.position = Vector3.Lerp(initialPosition, transform.position, timeElapsed / 58f);
             }
             else
             {

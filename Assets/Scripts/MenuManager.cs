@@ -8,6 +8,9 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private GameObject creditsMenu;
+    [Header("Save")]
+    [SerializeField] private GameObject continueButton;
+    [SerializeField] private GameObject window;
 
     private GameObject activeMenu;
 
@@ -16,6 +19,13 @@ public class MenuManager : MonoBehaviour
         AudioManager.Instance.PlayBackgroundSong("title");
         mainMenu.SetActive(true);
         activeMenu = mainMenu;
+        SaveManager.Instance.Load();
+
+        if(SaveManager.startPosition != Vector3.zero)
+        {
+            continueButton.SetActive(true);
+            window.GetComponent<RectTransform>().sizeDelta = new Vector2(window.GetComponent<RectTransform>().sizeDelta.x, 310);
+        }
     }
 
     private void OnDestroy()
@@ -50,9 +60,17 @@ public class MenuManager : MonoBehaviour
         activeMenu = creditsMenu;
     }
 
+    public void Continue()
+    {
+        AudioManager.Instance.ClickSoundEffect();
+        SaveManager.continueGame = true;
+        SceneManager.LoadScene("Game");
+    }
+
     public void GoToGameScene()
     {
         AudioManager.Instance.ClickSoundEffect();
+        SaveManager.continueGame = false;
         SceneManager.LoadScene("Game");
     }
 

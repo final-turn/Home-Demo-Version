@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class EndingScene : MonoBehaviour
 {
+    [SerializeField] private GameObject theEnd;
     [SerializeField] private Image blackScreen;
     [SerializeField] private Image thankYouMessage;
 
@@ -29,7 +30,16 @@ public class EndingScene : MonoBehaviour
         }
 
         blackScreen.gameObject.SetActive(false);
-        yield return new WaitForSeconds(7f);
+        yield return new WaitForSeconds(2f);
+
+        float startTime = Time.time;
+        Vector3 startPosition = theEnd.transform.GetComponent<RectTransform>().localPosition;
+        while (Time.time - startTime < 20)
+        {
+            yield return new WaitForSeconds(coroutineStep);
+            theEnd.transform.GetComponent<RectTransform>().localPosition = Vector3.Lerp(startPosition, new Vector3(0, 1930f, 0), (Time.time - startTime)/20);
+        }
+
         duration = 0;
         while (duration < 1)
         {

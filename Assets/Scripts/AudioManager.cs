@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
                 break;
             case "end":
                 MusicSource.clip = endingBackground;
-                MusicSource.time = 5f;
+                MusicSource.time = 26.6f;
                 break;
         }
         MusicSource.Play();

@@ -1,60 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PlanetCollider : MonoBehaviour
 {
-    public string type;
-    public bool anchorable = false;
-    public float gravityStrength = 0;
-    [SerializeField] private float knockbackStrength;
+    public float baseSize = 64;
+    [SerializeField] private float knockbackStrength = 40;
+    [SerializeField] private bool anchorable = true;
 
-    private PlayerController visitingPlayer;
+    [HideInInspector] public float planetSize;
 
     private void Awake()
     {
-        if (type == "gravityField")
+        if (name == "Gravity")
         {
             name = transform.parent.name;
+            if(!anchorable)
+            {
+                GetComponent<SpriteRenderer>().enabled = false;
+            }
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (type == "gravityField")
+        if (other.name == "PLAYER" && anchorable)
         {
-            if (other.name == "PLAYER")
-            {
-                visitingPlayer = other.GetComponent<PlayerController>();
-                visitingPlayer.AddGravitySource(this);
-
-                if (anchorable)
-                {
-                    visitingPlayer.AttemptAnchor(GetInstanceID());
-                }
-            }
+            PlayerController player = other.GetComponent<PlayerController>();
+            player.AttemptAnchor(GetInstanceID());
         }
+    }
 
-        if (type == "planet")
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.name == "PLAYER")
         {
-            if (other.name == "PLAYER")
-            {
-                PlayerController player = other.GetComponent<PlayerController>();
-                player.OnPlanetCollision(player.transform.position - transform.position, knockbackStrength);
-            }
+            PlayerController player = other.gameObject.GetComponent<PlayerController>();
+            player.OnPlanetCollision(player.transform.position - transform.position, knockbackStrength);
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (type == "gravityField")
+        if (other.name == "PLAYER" && anchorable)
         {
-            if (other.name == "PLAYER")
-            {
-                visitingPlayer = other.GetComponent<PlayerController>();
-                visitingPlayer.RemoveGravitySource(this);
-                visitingPlayer = null;
-            }
+            PlayerController player = other.GetComponent<PlayerController>();
+            player.CancelAnchor();
         }
     }
 }
